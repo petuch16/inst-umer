@@ -1,681 +1,241 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="ru">
 <head>
-    <link rel="stylesheet"
-          href="style.css">
-    <title>Instagram Clone</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>inst.umer — профиль</title>
+<style>
+:root {
+  color-scheme: light dark;
+  --site-primary: #d62976;
+  --site-on-primary: #ffffff;
+  --site-secondary: #f3f3f3;
+  --site-on-secondary: #262626;
+  --site-background: #ffffff;
+  --site-on-background: #111111;
+  --site-font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --site-font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --site-heading-scale: 1;
+  --site-spacing-scale: 1;
+  --site-radius-scale: 1;
+  --site-decoration-opacity: 1;
+  --text: light-dark(#111111,#f5f5f5);
+  --muted: light-dark(#737373,#a8a8a8);
+  --line: light-dark(#dbdbdb,#363636);
+  --surface: light-dark(#ffffff,#000000);
+  --soft: light-dark(#efefef,#262626);
+}
+* { box-sizing: border-box; }
+html { background: var(--site-background); }
+body { margin: 0; background: var(--site-background); color: var(--text); font-family: var(--site-font-body); -webkit-font-smoothing: antialiased; }
+button { font: inherit; cursor: pointer; border: 0; color: inherit; }
+.app { min-height: 100dvh; width: 100%; background-color: var(--site-background); color: var(--site-on-background); }
+.topbar { height: 54px; display:flex; align-items:center; justify-content:space-between; padding: 0 16px; border-bottom: 1px solid var(--line); position:sticky; top:0; z-index:5; background:var(--surface); }
+.brand { font-family: "Brush Script MT", "Segoe Script", cursive; font-size:29px; font-weight:700; letter-spacing:-1.4px; line-height:1; }
+.top-actions { display:flex; align-items:center; gap:22px; }
+.icon-btn { background:transparent; display:grid; place-items:center; padding:2px; }
+.icon-btn svg { width:25px; height:25px; stroke:currentColor; stroke-width:1.8; fill:none; }
+main { max-width: 630px; margin: 0 auto; padding-bottom: 68px; }
+.profile-head { padding: 22px 16px 0; }
+.identity { display:grid; grid-template-columns: minmax(84px, 1fr) 2fr; align-items:center; gap:18px; }
+.avatar-wrap { display:flex; justify-content:center; }
+.avatar-ring { width: min(21vw, 96px); height:min(21vw,96px); min-width:78px; min-height:78px; border-radius:50%; padding:3px; background: conic-gradient(#ffd776,#f56040,#c13584,#833ab4,#f56040,#ffd776); }
+.avatar { height:100%; width:100%; border-radius:50%; border:3px solid var(--surface); display:grid; place-items:center; background:linear-gradient(145deg,#222,#777); color:#fff; font-size:26px; font-weight:600; letter-spacing:-1px; }
+.stats { display:flex; justify-content:space-around; gap:8px; text-align:center; }
+.stat { display:flex; flex-direction:column; gap:3px; font-size:14px; white-space:nowrap; }
+.stat strong { font-size:17px; font-weight:650; }
+.profile-copy { margin-top:16px; font-size:14px; line-height:1.4; }
+.display-name { font-weight:600; margin-bottom:2px; }
+.bio { color:var(--text); white-space:pre-line; }
+.bio .muted { color:var(--muted); }
+.bio-link { color:#00376b; font-weight:600; }
+.profile-actions { display:grid; grid-template-columns:1fr 1fr 42px; gap:7px; margin-top:15px; }
+.action { height:34px; border-radius:8px; background:var(--soft); font-size:14px; font-weight:600; }
+.action.primary { background:#0095f6; color:#fff; }
+.action.primary.following { background:var(--soft); color:var(--text); }
+.action.more { display:grid; place-items:center; }
+.action.more svg { width:18px; height:18px; fill:currentColor; }
+.highlights { display:flex; gap:19px; overflow-x:auto; padding:20px 16px 18px; scrollbar-width:none; }
+.highlights::-webkit-scrollbar { display:none; }
+.highlight { flex:0 0 64px; text-align:center; font-size:11px; }
+.highlight-circle { width:62px; height:62px; padding:3px; border:1px solid var(--line); border-radius:50%; margin:0 auto 7px; }
+.highlight-art { width:100%; height:100%; border-radius:50%; display:grid; place-items:center; background:linear-gradient(135deg,#e6d4c5,#927d6a); color:white; font-size:21px; }
+.highlight:nth-child(2) .highlight-art { background:linear-gradient(135deg,#222,#8c8c8c); }
+.highlight:nth-child(3) .highlight-art { background:linear-gradient(135deg,#d1b7a0,#7e5946); }
+.highlight:nth-child(4) .highlight-art { background:linear-gradient(135deg,#d9d4c7,#8b8c8e); }
+.highlight:nth-child(5) .highlight-art { background:linear-gradient(135deg,#c3a6d7,#51415f); }
+.tabbar { height:45px; display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--line); }
+.tab { display:grid; place-items:center; background:transparent; color:var(--muted); position:relative; }
+.tab.active { color:var(--text); }
+.tab.active:before { content:""; height:1px; width:58%; background:var(--text); position:absolute; top:-1px; }
+.tab svg { width:23px; height:23px; stroke:currentColor; stroke-width:1.7; fill:none; }
+.grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:2px; }
+.post { aspect-ratio:1; position:relative; padding:0; overflow:hidden; background:#ded8d2; }
+.post-art { position:absolute; inset:0; display:grid; place-items:center; overflow:hidden; }
+.post-art:before,.post-art:after { content:""; position:absolute; border-radius:50%; opacity:.8; }
+.post-art:before { width:85%; height:85%; background:rgba(255,255,255,.18); transform:translate(-24%,-28%); }
+.post-art:after { width:65%; height:65%; background:rgba(0,0,0,.13); transform:translate(35%,36%); }
+.post:nth-child(6n+1) .post-art { background:linear-gradient(145deg,#d8c8b7,#665b56 70%,#272525); }
+.post:nth-child(6n+2) .post-art { background:linear-gradient(145deg,#e4d9c9,#b48f7d 55%,#4c4748); }
+.post:nth-child(6n+3) .post-art { background:linear-gradient(155deg,#d2d3cf,#747c80 55%,#24292d); }
+.post:nth-child(6n+4) .post-art { background:linear-gradient(145deg,#c5b9c9,#897b91 55%,#37313b); }
+.post:nth-child(6n+5) .post-art { background:linear-gradient(145deg,#d9c7a7,#8b735a 60%,#37312a); }
+.post:nth-child(6n) .post-art { background:linear-gradient(145deg,#d1d0c9,#9b9b91 55%,#494b48); }
+.post-symbol { position:relative; z-index:1; color:rgba(255,255,255,.78); font-size:clamp(28px,8vw,56px); font-weight:200; text-shadow:0 2px 18px #0003; }
+.post-type { position:absolute; z-index:2; top:7px; right:7px; color:white; filter:drop-shadow(0 1px 2px #0008); }
+.post-type svg { width:19px; height:19px; stroke:currentColor; fill:none; stroke-width:2; }
+.post-overlay { position:absolute; inset:0; background:#0007; color:white; display:flex; align-items:center; justify-content:center; gap:16px; font-size:14px; opacity:0; transition:opacity .15s; }
+.post:hover .post-overlay,.post:focus-visible .post-overlay { opacity:1; }
+.post-overlay span { display:flex; align-items:center; gap:5px; font-weight:650; }
+.post-overlay svg { width:17px; height:17px; fill:white; stroke:white; }
+.empty-state { grid-column:1/-1; padding:42px 18px; text-align:center; color:var(--muted); }
+.bottom-nav { position:fixed; z-index:6; bottom:0; left:0; right:0; height:calc(52px + env(safe-area-inset-bottom)); padding:0 8px env(safe-area-inset-bottom); display:flex; align-items:center; justify-content:space-around; border-top:1px solid var(--line); background:var(--surface); }
+.bottom-nav button { background:transparent; width:44px; height:44px; display:grid; place-items:center; }
+.bottom-nav svg { width:25px; height:25px; stroke:currentColor; stroke-width:1.8; fill:none; }
+.mini-avatar { width:25px; height:25px; border-radius:50%; border:1.5px solid currentColor; display:grid; place-items:center; font-size:10px; font-weight:700; background:linear-gradient(135deg,#222,#888); color:#fff; }
+.modal { display:none; position:fixed; inset:0; z-index:20; background:#000b; align-items:center; justify-content:center; padding:18px; }
+.modal.open { display:flex; }
+.modal-card { width:min(100%,420px); background:var(--surface); color:var(--text); border-radius:12px; overflow:hidden; box-shadow:0 10px 45px #0005; }
+.modal-head { height:48px; padding:0 14px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); font-weight:600; }
+.close { background:transparent; font-size:25px; line-height:1; }
+.modal-image { aspect-ratio:1; display:grid; place-items:center; color:#fff; font-size:76px; background:linear-gradient(145deg,#d8c8b7,#665b56 70%,#272525); }
+.modal-actions { display:flex; gap:15px; padding:12px 14px; }
+.modal-actions button { background:transparent; padding:0; }
+.modal-actions svg { width:25px; height:25px; stroke:currentColor; fill:none; stroke-width:1.8; }
+.modal-caption { padding:0 14px 16px; font-size:14px; }
+.toast { position:fixed; z-index:30; bottom:75px; left:50%; transform:translate(-50%,15px); background:#262626; color:white; padding:10px 15px; border-radius:9px; font-size:13px; opacity:0; pointer-events:none; transition:.2s; max-width:calc(100vw - 32px); text-align:center; }
+.toast.show { opacity:1; transform:translate(-50%,0); }
+@media (min-width:700px) { .app { max-width:100%; } .profile-head { padding-top:30px; } .identity { grid-template-columns: minmax(150px,1fr) 2fr; gap:28px; } .avatar-ring { width:150px;height:150px; } .profile-copy { margin-top:20px; } .highlights { padding-top:28px; padding-bottom:25px; } .bottom-nav { max-width:630px; margin:0 auto; left:0; right:0; } }
+@media (prefers-color-scheme:dark) { .bio-link { color:#e0f1ff; } }
+</style>
 </head>
 <body>
-  <!-- Our Header section Starts from here -->
-    <header>
-        <nav class="navbar">
-            <div class="container">
-                <div class="logo">
-                    <a href="#">
-                      <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609090809/download-200x200.png" 
-                        alt="img1" height="30px">
-                    </a>
-                </div>
-                <div class="searchbar">
-                    <input type="text" 
-                           placeholder="Search">
-                    <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093658/search-200x200.png"
-                         height="18"
-                         alt="img2">
-                </div>
-                <div class="nav-links">
-                    <ul class="nav-group">
-                        <li class="nav-item">
-                            <a href="#">
-                                <i class="fas fa-home"></i>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="">
-                                <i class="fab fa-facebook-messenger"></i>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="">
-                                <i class="far fa-compass"></i>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="">
-                                <i class="far fa-heart"></i>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <div class="action">
-                                <div class="profile" 
-                                     onclick="menuToggle()">
-                                    <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093221/g2-200x200.jpg" 
-                                        alt="user Avatar">
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <!-- Code for Showing the Status -->
-    <main>
-        <div class="container">
-            <div class="col-9">
-                <div class="statuses">
-                    <div class="status">
-                        <div class="image">
-                            <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220604085434/GeeksForGeeks-300x243.png"
-                                 alt="img3">
-                        </div>
-                    </div>
-                    <div class="status">
-                        <div class="image">
-                            <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093221/g2-200x200.jpg" 
-                                 alt="img4">
-                        </div>
-                    </div>
-                    <div class="status">
-                        <div class="image">
-                            <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093241/g3-200x200.png" 
-                                 alt="img5">
-                        </div>
-                    </div>
-                    <div class="status">
-                        <div class="image">
-                            <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093229/g-200x200.png" 
-                                 alt="img6">
-                        </div>
-                    </div>
-                    <div class="status">
-                        <div class="image">
-                            <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093221/g2-200x200.jpg" 
-                                 alt="img7">
-                        </div>
-                    </div>
-                    <div class="status">
-                        <div class="image">
-                            <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220604085434/GeeksForGeeks-300x243.png" 
-                                 alt="img8">
-                        </div>
-                    </div>
-                </div>
-              
-              <!-- Code for viewing the Post -->
-                <div class="card">
-                    <div class="top">
-                        <div class="userDetails">
-                            <div class="profilepic">
-                                <div class="profile_img">
-                                    <div class="image">
-                                        <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093229/g-200x200.png" 
-                                            alt="img8">
-                                    </div>
-                                </div>
-                            </div>
-                            <h3>Ayush Agarwal
-                                  <br>
-                                  <span>Mumbai, India</span>
-                          </h3>
-                        </div>
-                        <div>
-                            <span class="dot">
-                                <i class="fas fa-ellipsis-h"></i>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="imgBx">
-                        <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609090112/gfg1-298x300.jpeg" 
-                            alt="post-1" class="cover">
-                    </div>
-                    <div class="bottom">
-                        <div class="actionBtns">
-                            <div class="left">
-                                <span class="heart" 
-                                      onclick="addlike()">
-                                    <span>
-                                        <svg aria-label="Like" 
-                                             color="#262626" 
-                                             fill="#262626" 
-                                             height="24" 
-                                             role="img"
-                                             viewBox="0 0 48 48" 
-                                             width="24">
-                                            <!-- Coordinate path  -->
-
-                                            <path
-                                                d="M34.6 6.1c5.7 0 10.4 5.2 10.4 
-                                                11.5 0 6.8-5.9 11-11.5 16S25 41.3 24 
-                                                41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 
-                                                11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 4.3 
-                                                1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 2.5-3.9 
-                                                1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 0-7.9 
-                                                1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 
-                                                0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 
-                                                1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 
-                                                1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 2.8-2.2 
-                                                7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 
-                                                48 25 48 17.6c0-8-6-14.5-13.4-14.5z">
-                                            </path>
-                                        </svg>
-                                    </span>
-                                </span>
-                                <svg aria-label="Comment" 
-                                     class="_8-yf5 " 
-                                     color="#262626" 
-                                     fill="#262626" 
-                                     height="24"
-                                     role="img" 
-                                     viewBox="0 0 48 48" 
-                                     width="24">
-                                  
-                              <!-- Coordinate path  -->
-                                    <path clip-rule="evenodd"
-                                        d="M47.5 46.1l-2.8-11c1.8-3.3 2.8-7.1 2.8-11.1C47.5 
-                                        11 37 .5 24 .5S.5 11 .5 24 11 47.5 24 47.5c4 0 
-                                        7.8-1 11.1-2.8l11 2.8c.8.2 1.6-.6 1.4-1.4zm-3-22.1c0 
-                                        4-1 7-2.6 10-.2.4-.3.9-.2 1.4l2.1 
-                                        8.4-8.3-2.1c-.5-.1-1-.1-1.4.2-1.8 1-5.2 2.6-10 
-                                        2.6-11.4 0-20.6-9.2-20.6-20.5S12.7 3.5 24 3.5 
-                                        44.5 12.7 44.5 24z"
-                                        fill-rule="evenodd">
-                                  </path>
-                                </svg>
-                                <svg aria-label="Share Post" 
-                                     class="_8-yf5 " 
-                                     color="#262626" 
-                                     fill="#262626" 
-                                     height="24"
-                                     role="img"
-                                     viewBox="0 0 48 48" 
-                                     width="24">
-                                    <path
-                                        d="M47.8 3.8c-.3-.5-.8-.8-1.3-.8h-45C.9 3.1.3 
-                                        3.5.1 4S0 5.2.4 5.7l15.9 15.6 5.5 22.6c.1.6.6 
-                                        1 1.2 1.1h.2c.5 0 1-.3 
-                                        1.3-.7l23.2-39c.4-.4.4-1 .1-1.5zM5.2 
-                                        6.1h35.5L18 18.7 5.2 6.1zm18.7 
-                                        33.6l-4.4-18.4L42.4 8.6 23.9 39.7z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <div class="right">
-                                <svg aria-label="Save" 
-                                     class="_8-yf5 " 
-                                     color="#262626" 
-                                     fill="#262626" 
-                                     height="24"
-                                     role="img" 
-                                     viewBox="0 0 48 48" 
-                                     width="24">
-                                  <!-- Coordinate path  -->
-                                    <path
-                                        d="M43.5 48c-.4 0-.8-.2-1.1-.4L24 29 5.6 
-                                        47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 
-                                        3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 
-                                        1.2-.9 1.4-.2.1-.4.1-.6.1zM24 26c.8 
-                                        0 1.6.3 2.2.9l15.8 16V3H6v39.9l15.8-16c.6-.6 
-                                        1.4-.9 2.2-.9z">
-                                    </path>
-                                </svg>
-                            </div>
-                        </div>
-                        <a href="#">
-                            <p class="likes">203 likes</p>
-
-                        </a>
-                        <a href="#">
-                            <p class="message">
-                              <b>Raju Modi</b>
-                            </p>
-
-                        </a>
-                        <a href="#">
-                            <h4 class="comments">View all 32 comments</h4>
-                        </a>
-                        <a href="#">
-                            <h5 class="postTime">2 hours ago</h5>
-                        </a>
-                        <div class="addComments">
-                            <div class="reaction">
-                                <h3>
-                                  <i class="far fa-smile"></i>
-                                </h3>
-                            </div>
-                            <input type="text"
-                                   class="text"
-                                   placeholder="Add a comment...">
-                            <a href="#">Post</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="top">
-                        <div class="userDetails">
-                            <div class="profilepic">
-                                <div class="profile_img">
-                                    <div class="image">
-                                        <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093241/g3-200x200.png" 
-                                            alt="img9">
-                                    </div>
-                                </div>
-                            </div>
-                            <h3>Piyush Agarwal<br>
-                              <span>Delhi, India</span>
-                             </h3>
-                        </div>
-                        <div>
-                            <span class="dot">
-                                <i class="fas fa-ellipsis-h"></i>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="imgBx">
-                        <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609090119/gfg2-300x297.jpeg" 
-                            alt="post-1" class="cover">
-                    </div>
-                    <div class="bottom">
-                        <div class="actionBtns">
-                            <div class="left">
-                                <span class="heart" 
-                                      onclick="addlike()">
-                                    <span>
-                                        <svg aria-label="Like" 
-                                             color="#262626" 
-                                             fill="#262626" 
-                                             height="24" 
-                                             role="img"
-                                             viewBox="0 0 48 48" 
-                                             width="24">
-                                  <!-- Coordinate path  -->
-                                            <path
-                                                d="M34.6 6.1c5.7 0 10.4 5.2 10.4 11.5 
-                                                0 6.8-5.9 11-11.5 16S25 41.3 24 
-                                                41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 
-                                                11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 
-                                                4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 
-                                                2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 
-                                                0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 
-                                                3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 
-                                                16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 
-                                                6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5.6 0 
-                                                1.1-.2 1.6-.5 1-.6 2.8-2.2 
-                                                7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 
-                                                29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z">
-                                            </path>
-                                        </svg>
-                                    </span>
-                                </span>
-                                <svg aria-label="Comment" 
-                                     class="_8-yf5 " 
-                                     color="#262626" 
-                                     fill="#262626" 
-                                     height="24"
-                                     role="img" 
-                                     viewBox="0 0 48 48" 
-                                     width="24">
-                                    <path clip-rule="evenodd"
-                               <!-- Coordinate path  -->
-                                        d="M47.5 46.1l-2.8-11c1.8-3.3 2.8-7.1 
-                                        2.8-11.1C47.5 11 37 .5 24 .5S.5 11 .5 24 11 
-                                        47.5 24 47.5c4 0 7.8-1 11.1-2.8l11 2.8c.8.2 
-                                        1.6-.6 1.4-1.4zm-3-22.1c0 4-1 7-2.6 10-.2.4-.3.9-.2 
-                                        1.4l2.1 8.4-8.3-2.1c-.5-.1-1-.1-1.4.2-1.8 
-                                        1-5.2 2.6-10 2.6-11.4 0-20.6-9.2-20.6-20.5S12.7 
-                                        3.5 24 3.5 44.5 12.7 44.5 24z"
-                                        fill-rule="evenodd"></path>
-                                </svg>
-                                <svg aria-label="Share Post" 
-                                     class="_8-yf5 " 
-                                     color="#262626" 
-                                     fill="#262626" 
-                                     height="24"
-                                     role="img" 
-                                     viewBox="0 0 48 48" 
-                                     width="24">
-                                    <path
-                                        d="M47.8 3.8c-.3-.5-.8-.8-1.3-.8h-45C.9 3.1.3 
-                                        3.5.1 4S0 5.2.4 5.7l15.9 15.6 5.5 22.6c.1.6.6 
-                                        1 1.2 1.1h.2c.5 0 1-.3 1.3-.7l23.2-39c.4-.4.4-1 .1-1.5zM5.2 
-                                        6.1h35.5L18 18.7 5.2 6.1zm18.7 33.6l-4.4-18.4L42.4 
-                                        8.6 23.9 39.7z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <div class="right">
-                                <svg aria-label="Save"
-                                     class="_8-yf5 " 
-                                     color="#262626"
-                                     fill="#262626" 
-                                     height="24"
-                                     role="img" 
-                                     viewBox="0 0 48 48" 
-                                     width="24">
-                            <!-- Coordinate path  -->
-
-                                    <path
-                                        d="M43.5 48c-.4 0-.8-.2-1.1-.4L24 29 5.6 
-                                        47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 
-                                        3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 
-                                        1.2-.9 1.4-.2.1-.4.1-.6.1zM24 26c.8 0 1.6.3 
-                                        2.2.9l15.8 16V3H6v39.9l15.8-16c.6-.6 1.4-.9 2.2-.9z">
-                                    </path>
-                                </svg>
-                            </div>
-                        </div>
-                      <!-- Adding number of like and name of people  -->
-                        <a href="#">
-                            <p class="likes">119 likes</p>
-                        </a>
-                        <a href="#">
-                            <p class="message">
-                              <b>Piyush Agarwal</b>
-                            </p>
-                        </a>
-                        <a href="#">
-                            <h4 class="comments">View all 20 comments</h4>
-                        </a>
-                        <a href="#">
-                            <h5 class="postTime">4 hours ago</h5>
-                        </a>
-                        <div class="addComments">
-                            <div class="reaction">
-                                <h3><i class="far fa-smile"></i></h3>
-                            </div>
-                            <input type="text" 
-                                   class="text" 
-                                   placeholder="Add a comment...">
-                            <a href="#">Post</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="top">
-                        <div class="userDetails">
-                            <div class="profilepic">
-                                <div class="profile_img">
-                                    <div class="image">
-                                        <img src="./assets/images/user-3.jpeg" 
-                                            alt="img10">
-                                    </div>
-                                </div>
-                            </div>
-                            <h3>Keshav Agarwal<br>
-                              <span>Kolkata, India</span>
-                            </h3>
-                        </div>
-                        <div>
-                            <span class="dot">
-                                <i class="fas fa-ellipsis-h"></i>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="imgBx">
-                        <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609090130/gfg3-299x300.jpeg" 
-                            alt="post-1" 
-                            class="cover">
-                    </div>
-                    <div class="bottom">
-                        <div class="actionBtns">
-                            <div class="left">
-                                <span class="heart" 
-                                      onclick="addlike()">
-                                    <span>
-                                        <svg aria-label="Like" 
-                                             color="#262626" 
-                                             fill="#262626" 
-                                             height="24" 
-                                             role="img"
-                                             viewBox="0 0 48 48"
-                                             width="24">
-                                            <path
-                                                d="M34.6 6.1c5.7 0 10.4 5.2 10.4 
-                                                11.5 0 6.8-5.9 11-11.5 16S25 41.3 
-                                                24 41.9c-1.1-.7-4.7-4-9.5-8.3-5.7-5-11.5-9.2-11.5-16C3 
-                                                11.3 7.7 6.1 13.4 6.1c4.2 0 6.5 2 8.1 
-                                                4.3 1.9 2.6 2.2 3.9 2.5 3.9.3 0 .6-1.3 
-                                                2.5-3.9 1.6-2.3 3.9-4.3 8.1-4.3m0-3c-4.5 
-                                                0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 
-                                                3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 
-                                                1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 
-                                                6.5.5.3 1.1.5 1.6.5.6 0 1.1-.2 1.6-.5 1-.6 
-                                                2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 
-                                                29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z">
-                                            </path>
-                                        </svg>
-                                    </span>
-                                </span>
-                                <svg aria-label="Comment" 
-                                     class="_8-yf5 " 
-                                     color="#262626" 
-                                     fill="#262626" 
-                                     height="24"
-                                     role="img" 
-                                     viewBox="0 0 48 48" 
-                                     width="24">
-                                    <path clip-rule="evenodd"
-                                        d="M47.5 46.1l-2.8-11c1.8-3.3 2.8-7.1 
-                                        2.8-11.1C47.5 11 37 .5 24 .5S.5 11 .5 24 11 
-                                        47.5 24 47.5c4 0 7.8-1 11.1-2.8l11 2.8c.8.2 
-                                        1.6-.6 1.4-1.4zm-3-22.1c0 4-1 7-2.6 10-.2.4-.3.9-.2 
-                                        1.4l2.1 8.4-8.3-2.1c-.5-.1-1-.1-1.4.2-1.8 
-                                        1-5.2 2.6-10 2.6-11.4 0-20.6-9.2-20.6-20.5S12.7 
-                                        3.5 24 3.5 44.5 12.7 44.5 24z"
-                                        fill-rule="evenodd">
-                                  </path>
-                                </svg>
-                                <svg aria-label="Share Post"
-                                     class="_8-yf5 " 
-                                     color="#262626" 
-                                     fill="#262626" 
-                                     height="24"
-                                     role="img" 
-                                     viewBox="0 0 48 48" 
-                                     width="24">
-                                    <path
-                                        d="M47.8 3.8c-.3-.5-.8-.8-1.3-.8h-45C.9 
-                                        3.1.3 3.5.1 4S0 5.2.4 5.7l15.9 15.6 5.5 
-                                        22.6c.1.6.6 1 1.2 1.1h.2c.5 0 1-.3 
-                                        1.3-.7l23.2-39c.4-.4.4-1 .1-1.5zM5.2 
-                                        6.1h35.5L18 18.7 5.2 6.1zm18.7 
-                                        33.6l-4.4-18.4L42.4 8.6 23.9 39.7z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <div class="right">
-                                <svg aria-label="Save" 
-                                     class="_8-yf5 " 
-                                     color="#262626" 
-                                     fill="#262626" 
-                                     height="24"
-                                     role="img" 
-                                     viewBox="0 0 48 48" 
-                                     width="24">
-                                    <path
-                                        d="M43.5 48c-.4 0-.8-.2-1.1-.4L24 29 5.6 
-                                        47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 
-                                        3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 
-                                        1.2-.9 1.4-.2.1-.4.1-.6.1zM24 26c.8 0 
-                                        1.6.3 2.2.9l15.8 16V3H6v39.9l15.8-16c.6-.6 
-                                        1.4-.9 2.2-.9z">
-                                    </path>
-                                </svg>
-                            </div>
-                        </div>
-                        <a href="#">
-                            <p class="likes">184 likes</p>
-                        </a>
-                        <a href="#">
-                            <p class="message">
-                              <b>Mayank</b> Nature 
-                                <span>#love</span>
-                                <span>#2021</span>
-                            </p>
-                        </a>
-                        <a href="#">
-                            <h4 class="comments">View all 25 comments</h4>
-                        </a>
-                        <a href="#">
-                            <h5 class="postTime">9 hours ago</h5>
-                        </a>
-                        <div class="addComments">
-                            <div class="reaction">
-                                <h3>
-                                  <i class="far fa-smile"></i>
-                               </h3>
-                            </div>
-                            <input type="text"
-                                   class="text" 
-                                   placeholder="Add a comment...">
-                            <a href="#">Post</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="card">
-                    <h4>Suggestions For You</h4>
-                    <div class="top">
-                        <div class="userDetails">
-                            <div class="profilepic">
-                                <div class="profile_img">
-                                    <div class="image">
-                                        <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093221/g2-200x200.jpg" 
-                                            alt="img12">
-                                    </div>
-                                </div>
-                            </div>
-                            <h3>Aditya Verma<br>
-                              <span>Follows You</span>
-                            </h3>
-                        </div>
-                        <div>
-                            <a href="#" 
-                               class="follow">follow
-                             </a>
-                        </div>
-                    </div>
-                    <div class="top">
-                        <div class="userDetails">
-                            <div class="profilepic">
-                                <div class="profile_img">
-                                    <div class="image">
-                                        <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093229/g-200x200.png" 
-                                            alt="img13">
-                                    </div>
-                                </div>
-                            </div>
-                            <h3>Amit Singh<br>
-                              <span>Follows You</span>
-                           </h3>
-                        </div>
-                        <div>
-                            <a href="#" 
-                               class="follow">follow
-                           </a>
-                        </div>
-                    </div>
-                    <div class="top">
-                        <div class="userDetails">
-                            <div class="profilepic">
-                                <div class="profile_img">
-                                    <div class="image">
-                                        <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093221/g2-200x200.jpg" 
-                                            alt="img14">
-                                    </div>
-                                </div>
-                            </div>
-                            <h3>Piyush Agarwal<br>
-                                <span>Followed by Keshav Agarwal</span>
-                            </h3>
-                        </div>
-                        <div>
-                            <a href="#" 
-                               class="follow">follow</a>
-                        </div>
-                    </div>
-                    <div class="top">
-                        <div class="userDetails">
-                            <div class="profilepic">
-                                <div class="profile_img">
-                                    <div class="image">
-                                        <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093229/g-200x200.png" 
-                                            alt="img15">
-                                    </div>
-                                </div>
-                            </div>
-                            <h3>Amit Sharma<br>
-                              <span>Follows You</span>
-                            </h3>
-                        </div>
-                        <div>
-                            <a href="#" 
-                               class="follow">follow
-                           </a>
-                        </div>
-                    </div>
-                    <div class="top">
-                        <div class="userDetails">
-                            <div class="profilepic">
-                                <div class="profile_img">
-                                    <div class="image">
-                                        <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093241/g3-200x200.png" 
-                                            alt="img16" 
-                                            class="cover">
-                                    </div>
-                                </div>
-                            </div>
-                            <h3>Raj Goel<br>
-                                <span>Followed by Keshav Agarwal</span>
-                            </h3>
-                        </div>
-                        <div>
-                            <a href="#" 
-                               class="follow">follow
-                            </a>
-                        </div>
-                    </div>
-                </div>
-             <!-- Our Footer Section will start from Here -->
-                <div class="footer">
-                    <a class="footer-section" href="#">About</a>
-                    <a class="footer-section" href="#">Help</a>
-                    <a class="footer-section" href="#">API</a>
-                    <a class="footer-section" href="#">Jobs</a>
-                    <a class="footer-section" href="#">Privacy</a>
-                    <a class="footer-section" href="#">Terms</a>
-                    <a class="footer-section" href="#">Locations</a>
-                    <br>
-                    <a class="footer-section" href="#">Top Accounts</a>
-                    <a class="footer-section" href="#">Hashtag</a>
-                    <a class="footer-section" href="#">Language</a>
-                    <br><br>
-                    <span class="footer-section">
-                        &copy; 2023 INSTAGRAM FROM FACEBOOK
-                    </span>
-                </div>
-            </div>
+<div class="app" id="app">
+  <header class="topbar">
+    <button class="icon-btn" aria-label="Назад" id="backBtn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <div class="brand">Instagram</div>
+    <div class="top-actions">
+      <button class="icon-btn" aria-label="Уведомления" data-toast="Это демонстрационный интерфейс"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></button>
+      <button class="icon-btn" aria-label="Ещё" id="moreTop"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button>
+    </div>
+  </header>
+  <main>
+    <section class="profile-head" aria-label="Профиль пользователя">
+      <div class="identity">
+        <div class="avatar-wrap"><div class="avatar-ring"><div class="avatar">IU</div></div></div>
+        <div class="stats">
+          <div class="stat"><strong id="postCount">—</strong><span>публикации</span></div>
+          <div class="stat"><strong id="followerCount">—</strong><span>подписчики</span></div>
+          <div class="stat"><strong id="followingCount">—</strong><span>подписки</span></div>
         </div>
-    </main>
+      </div>
+      <div class="profile-copy">
+        <div class="display-name">inst.umer</div>
+        <div class="bio">Описание профиля можно добавить здесь
+          <span class="muted">Публичный макет · данные профиля не загружены</span>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <button class="action primary" id="followBtn">Подписаться</button>
+        <button class="action" id="messageBtn">Написать</button>
+        <button class="action more" id="moreBtn" aria-label="Дополнительные действия"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></button>
+      </div>
+    </section>
+    <section class="highlights" aria-label="Актуальное">
+      <button class="highlight" data-highlight="Актуальное 1"><div class="highlight-circle"><div class="highlight-art">✦</div></div><span>Актуальное</span></button>
+      <button class="highlight" data-highlight="Актуальное 2"><div class="highlight-circle"><div class="highlight-art">☾</div></div><span>...</span></button>
+      <button class="highlight" data-highlight="Актуальное 3"><div class="highlight-circle"><div class="highlight-art">⌁</div></div><span>...</span></button>
+      <button class="highlight" data-highlight="Актуальное 4"><div class="highlight-circle"><div class="highlight-art">✧</div></div><span>...</span></button>
+      <button class="highlight" data-highlight="Актуальное 5"><div class="highlight-circle"><div class="highlight-art">◇</div></div><span>...</span></button>
+    </section>
+    <nav class="tabbar" aria-label="Разделы публикаций">
+      <button class="tab active" data-tab="grid" aria-label="Публикации"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>
+      <button class="tab" data-tab="reels" aria-label="Reels"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 3l5 7M15 3l5 7M3 9h18M10 13l5 3-5 3z"/></svg></button>
+      <button class="tab" data-tab="tagged" aria-label="Отметки"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg></button>
+    </nav>
+    <section class="grid" id="postGrid" aria-label="Публикации">
+      <button class="post" data-index="1" aria-label="Открыть публикацию 1"><div class="post-art"><span class="post-symbol">✧</span></div><span class="post-type"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8"/></svg></span><div class="post-overlay"><span>♥  —</span><span>▢  —</span></div></button>
+      <button class="post" data-index="2" aria-label="Открыть публикацию 2"><div class="post-art"><span class="post-symbol">◌</span></div><span class="post-type"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M10 8l6 4-6 4z"/></svg></span><div class="post-overlay"><span>♥  —</span><span>▢  —</span></div></button>
+      <button class="post" data-index="3" aria-label="Открыть публикацию 3"><div class="post-art"><span class="post-symbol">⌁</span></div><div class="post-overlay"><span>♥  —</span><span>▢  —</span></div></button>
+      <button class="post" data-index="4" aria-label="Открыть публикацию 4"><div class="post-art"><span class="post-symbol">✦</span></div><div class="post-overlay"><span>♥  —</span><span>▢  —</span></div></button>
+      <button class="post" data-index="5" aria-label="Открыть публикацию 5"><div class="post-art"><span class="post-symbol">◈</span></div><div class="post-overlay"><span>♥  —</span><span>▢  —</span></div></button>
+      <button class="post" data-index="6" aria-label="Открыть публикацию 6"><div class="post-art"><span class="post-symbol">☼</span></div><div class="post-overlay"><span>♥  —</span><span>▢  —</span></div></button>
+    </section>
+  </main>
+  <nav class="bottom-nav" aria-label="Основная навигация">
+    <button aria-label="Главная" data-toast="Демо: главная лента"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5V21h-6v-7H9v7H3z"/></svg></button>
+    <button aria-label="Поиск" data-toast="Демо: поиск"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="7.3"/><path d="m16.2 16.2 5 5"/></svg></button>
+    <button aria-label="Создать" data-toast="Демо: создание публикации"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 7v10M7 12h10"/></svg></button>
+    <button aria-label="Reels" data-toast="Демо: Reels"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 3l5 7M15 3l5 7M3 9h18M10 13l5 3-5 3z"/></svg></button>
+    <button aria-label="Профиль" data-toast="Вы уже на странице профиля"><span class="mini-avatar">IU</span></button>
+  </nav>
+</div>
+<div class="modal" id="postModal" role="dialog" aria-modal="true" aria-label="Публикация"><div class="modal-card"><div class="modal-head"><span>inst.umer</span><button class="close" id="closeModal" aria-label="Закрыть">×</button></div><div class="modal-image" id="modalImage">✧</div><div class="modal-actions"><button id="likeBtn" aria-label="Нравится"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8z"/></svg></button><button data-toast="Комментарии в макете не подключены" aria-label="Комментарии"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9a8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg></button><button data-toast="Ссылка на макетную публикацию не создана" aria-label="Поделиться"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg></button></div><div class="modal-caption"><strong>inst.umer</strong> <span id="captionText">Предпросмотр публикации. Добавьте собственную фотографию и подпись.</span></div></div></div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+(() => {
+  const toast = document.getElementById('toast');
+  let toastTimer;
+  function notify(message) {
+    toast.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+  document.querySelectorAll('[data-toast]').forEach(el => el.addEventListener('click', () => notify(el.dataset.toast)));
+  document.getElementById('followBtn').addEventListener('click', function () {
+    const isFollowing = this.classList.toggle('following');
+    this.textContent = isFollowing ? 'Вы подписаны' : 'Подписаться';
+    notify(isFollowing ? 'Изменение только в этом макете' : 'Подписка отменена в макете');
+  });
+  document.getElementById('messageBtn').addEventListener('click', () => notify('Сообщения не подключены в демонстрационном макете'));
+  document.getElementById('moreBtn').addEventListener('click', () => notify('Дополнительные действия макета'));
+  document.getElementById('moreTop').addEventListener('click', () => notify('Меню демонстрационного профиля'));
+  document.getElementById('backBtn').addEventListener('click', () => notify('Это отдельная демонстрационная страница'));
+  document.querySelectorAll('[data-highlight]').forEach(el => el.addEventListener('click', () => notify(el.dataset.highlight + ' — добавьте свои истории')));
+  const grid = document.getElementById('postGrid');
+  const originalPosts = grid.innerHTML;
+  document.querySelectorAll('[data-tab]').forEach(tab => tab.addEventListener('click', () => {
+    document.querySelectorAll('[data-tab]').forEach(t => t.classList.toggle('active', t === tab));
+    if (tab.dataset.tab === 'grid') grid.innerHTML = originalPosts;
+    else if (tab.dataset.tab === 'reels') grid.innerHTML = '<div class="empty-state">Раздел Reels<br><small>Добавьте собственные видео, чтобы заполнить этот раздел.</small></div>';
+    else grid.innerHTML = '<div class="empty-state">Фото с отметками<br><small>Здесь могут отображаться публикации, в которых отмечен профиль.</small></div>';
+    bindPosts();
+  }));
+  const modal = document.getElementById('postModal');
+  const symbols = ['✧','◌','⌁','✦','◈','☼'];
+  const backgrounds = [
+    'linear-gradient(145deg,#d8c8b7,#665b56 70%,#272525)',
+    'linear-gradient(145deg,#e4d9c9,#b48f7d 55%,#4c4748)',
+    'linear-gradient(155deg,#d2d3cf,#747c80 55%,#24292d)',
+    'linear-gradient(145deg,#c5b9c9,#897b91 55%,#37313b)',
+    'linear-gradient(145deg,#d9c7a7,#8b735a 60%,#37312a)',
+    'linear-gradient(145deg,#d1d0c9,#9b9b91 55%,#494b48)'
+  ];
+  function bindPosts() {
+    document.querySelectorAll('.post').forEach(post => post.addEventListener('click', () => {
+      const i = (Number(post.dataset.index || 1) - 1) % symbols.length;
+      document.getElementById('modalImage').textContent = symbols[i];
+      document.getElementById('modalImage').style.background = backgrounds[i];
+      document.getElementById('captionText').textContent = 'Предпросмотр публикации ' + (i + 1) + '. Это пример интерфейса, а не реальная публикация аккаунта.';
+      document.getElementById('likeBtn').style.color = '';
+      document.getElementById('likeBtn').dataset.liked = 'false';
+      modal.classList.add('open');
+    }));
+  }
+  bindPosts();
+  function closeModal() { modal.classList.remove('open'); }
+  document.getElementById('closeModal').addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  document.getElementById('likeBtn').addEventListener('click', function () {
+    const liked = this.dataset.liked !== 'true';
+    this.dataset.liked = String(liked);
+    this.style.color = liked ? '#ff3040' : '';
+    notify(liked ? 'Лайк поставлен только в макете' : 'Лайк убран в макете');
+  });
+})();
+</script>
 </body>
 </html>
